@@ -1,16 +1,21 @@
 env:
   global:
-    - PATH: /usr/local/texlive/bin/x86_64-linux:$PATH
-    - GH_REF: github.com/${TRAVIS_REPO_SLUG}.git
-    - secure: "J/oFevIbuIyl1P16qdSVaNeJ0P1rL5Hub92SlDcNmhZ6NGu7+9N43fDs+uf3ihCmu664wZDKzB8YACetOfZ+XrZ9M72IfI3CzA7OWrx8elsub+WvaaOeVp3D+tDgNzxhXVRVJl5jZMmgEh5KjZ6GNshuTEPrIN+14s8bR4CciEM="
+  - PATH: "/usr/local/texlive/bin/x86_64-linux:$PATH"
+  - GH_REF: github.com/${TRAVIS_REPO_SLUG}.git
+  - TARGET_BRANCH: gh-pages
+  - secure: gp63Mp3ZBTOatPZ//QZ6qhfXVTKeGNf3l2wXFLjUIFH+UO/3paH3irECVtBMfSVbx2TvLorroDoiP1WDzefDcJ3RYUfRO5oVl0FmgkdPAbIlz2wedXjtFsgCq30PWPwAKwqCx7foNE86FKYOsDFxk4t9fP83DuWMnbRDDt4QqQvL9PWI6yE14HhCczp3pUAHvbpI4XpNopKR272o7CDTYTnMn6LXYg3EmO0wEgWPRR/3PPIBSoTnClksIbAO4yp7BnP51US+BUUZDC1r5Mfb7VqdneTU5UE20LgxZufwkhZ7ks898mzgsyw5jjMesMPtZIGTyE8n0GVqfRC/X8gPDt9ST8oK8edh16mvNebWABRp9VHM1QPJUorKbdPfSXs9lcr2iAQi9buohgTy+A1yjH1UupWHFOVMKgeBXtk5S5LL9fDpgX1MEVMe5ZZ0YKLr65YsCIHOxmtqokVeV+nxgQ3S9SfA6Ure1BEKmDzeDSOjh0LCSZkLw6ybe9Ue9hernv0sOuUIo8ll4cFwdlcrZQGuzPkCGg8mfZUNDBwhkVX81Twrc2BJlOSQGYyukVsNO/TISi3aTV73tGOI39uXX+7q3x/7NXTD7Lf3PBlb0RqFlcU/g5t01f3QZVnnB/9lVGHwm+S6xrQU7jGgS/hlRnJpnXAipBLuUCqNmo5/Phw=
 git:
   submodules: false
 before_install:
-  - git submodule update --init --recursive
-#before_script:
-#  - cd ./developers/ && sudo -E ./texlive_install.sh && cd ../
+- openssl aes-256-cbc -K $encrypted_373c076bae3a_key -iv $encrypted_373c076bae3a_iv
+  -in bot_deploy_key.enc -out deploy_key -d
+- git submodule update --init --recursive
 script:
-  - sudo -E make tex_env
-  - make all
+- sudo -E make tex_env
+- make -j 4 all
 after_success:
-  - if [[ "$TRAVIS_BRANCH" == "master" ]]; then bash ./developers/deploy-ghpages.sh; fi
+- if [[ "$TRAVIS_BRANCH" == "master" ]]; then bash ./developers/deploy-ghpages.sh;
+  fi
+cache:
+  directories:
+  - "/usr/local/texlive"
